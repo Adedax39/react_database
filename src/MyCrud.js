@@ -76,8 +76,24 @@ const CRUD = () => {
   };
 
   const handleDelete = (id) => {
-    if (window.confirm("Are you to delete this employee?") === true) alert(id);
-  };
+    const url = `https://localhost:7131/api/Employee/${id}`;
+    const data = {
+      "name": name,
+      "age": age,
+      "isActive": isActive,
+    };
+    if (window.confirm("Are you to delete this employee?") === true) 
+     axios.delete(url,data)
+    .then((result) =>{
+      getData();
+      toast.success("Employee has been sucessfuly deleted");
+    });
+      
+  
+  
+  
+  
+    };
 
   const handleUpdate = () => {};
 
