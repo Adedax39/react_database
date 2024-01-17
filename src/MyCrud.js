@@ -8,6 +8,8 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import axios from "axios";
+import {ToastContainer, toast} from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 const CRUD = () => {
   const [show, setShow] = useState(false);
@@ -28,6 +30,33 @@ const CRUD = () => {
     //alert(id);
     handleShow();
   };
+
+  const handleSave = () => {
+    const url = "https://localhost:7131/api/Employee";
+    const data = {
+      "name": name,
+      "age": age,
+      "isActive": isActive,
+    };
+
+    axios.post(url,data)
+    .then((result) =>{
+       getData();
+       clear();
+       toast.success('Employee has been successfully recorded');
+    })
+
+  };
+
+  const clear = () =>{
+    setName('');
+    setAge('');
+    setisActive(0);
+    editSetName('');
+    editSetAge('');
+    editSetisActive(0)
+    setEditId('')
+  }
 
   const [data, setData] = useState([]);
 
@@ -52,8 +81,32 @@ const CRUD = () => {
 
   const handleUpdate = () => {};
 
+ const handleActiveChange = (e) =>{
+     if (e.target.checked) 
+     {
+      setisActive(1);
+     }
+     else
+     {
+      setisActive(0);
+     }
+ }
+
+ const editHandleActiveChange = (e) =>{
+  if (e.target.checked) 
+  {
+   editSetisActive(1);
+  }
+  else
+  {
+   editSetisActive(0);
+  }
+}
+
+
   return (
     <Fragment>
+    <ToastContainer />
       <Container>
         <Row>
           <Col>
@@ -78,13 +131,15 @@ const CRUD = () => {
             <input
               type="checkbox"
               checked={isActive === 1 ? true : false}
-              onChange={(e) => setisActive(e)}
+              onChange={handleActiveChange}
               value={isActive}
             />
             <label>IsActive</label>
           </Col>
           <Col>
-            <button className="btn btn-primary">Submit</button>
+            <button className="btn btn-primary" onClick={() => handleSave()}>
+              Submit
+            </button>
           </Col>
         </Row>
       </Container>
@@ -159,7 +214,7 @@ const CRUD = () => {
               <input
                 type="checkbox"
                 checked={editIsActive === 1 ? true : false}
-                onChange={(e) => editSetisActive(e)}
+                onChange={editHandleActiveChange}
                 value={editIsActive}
               />
               <label>IsActive</label>
