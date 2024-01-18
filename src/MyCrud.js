@@ -8,8 +8,8 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import axios from "axios";
-import {ToastContainer, toast} from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const CRUD = () => {
   const [show, setShow] = useState(false);
@@ -27,36 +27,46 @@ const CRUD = () => {
   const [editIsActive, editSetisActive] = useState(0);
 
   const handleEdit = (id) => {
-    //alert(id);
     handleShow();
+    axios
+      .get(`https://localhost:7131/api/Employee/${id}`)
+      .then((result) => {
+        clear();
+        editSetName(result.data.name);
+        editSetAge(result.data.age);
+        editSetisActive(result.data.isActive);
+        setEditId(id);
+        
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   const handleSave = () => {
     const url = "https://localhost:7131/api/Employee";
     const data = {
-      "name": name,
-      "age": age,
-      "isActive": isActive,
+      name: name,
+      age: age,
+      isActive: isActive,
     };
 
-    axios.post(url,data)
-    .then((result) =>{
-       getData();
-       clear();
-       toast.success('Employee has been successfully recorded');
-    })
-
+    axios.post(url, data).then((result) => {
+      getData();
+      clear();
+      toast.success("Employee has been successfully recorded");
+    });
   };
 
-  const clear = () =>{
-    setName('');
-    setAge('');
+  const clear = () => {
+    setName("");
+    setAge("");
     setisActive(0);
-    editSetName('');
-    editSetAge('');
-    editSetisActive(0)
-    setEditId('')
-  }
+    editSetName("");
+    editSetAge("");
+    editSetisActive(0);
+    setEditId("");
+  };
 
   const [data, setData] = useState([]);
 
@@ -78,51 +88,62 @@ const CRUD = () => {
   const handleDelete = (id) => {
     const url = `https://localhost:7131/api/Employee/${id}`;
     const data = {
-      "name": name,
-      "age": age,
-      "isActive": isActive,
+      name: name,
+      age: age,
+      isActive: isActive,
     };
-    if (window.confirm("Are you to delete this employee?") === true) 
-     axios.delete(url,data)
-    .then((result) =>{
-      getData();
-      toast.success("Employee has been sucessfuly deleted");
-    });
-      
-  
-  
-  
-  
+    if (window.confirm("Are you to delete this employee?") === true)
+      axios.delete(url, data).then((result) => {
+        getData();
+        toast.success("Employee has been sucessfuly deleted");
+      });
+  };
+
+  const handleUpdate = () => {
+    clear();
+    const url = `https://localhost:7131/api/Employee`;
+    const data = {
+      id: editId,
+      name: editName,
+      age: editAge,
+      isActive: editIsActive,
     };
 
-  const handleUpdate = () => {};
+    axios
+      .put(url, data)
+      .then((result) => {
+        getData();
+        clear();
+        toast.success("Employee has been successfully updated");
+        handleClose(); // Close the modal after successful update
+      })
+      .catch((error) => {
+        console.error("Error updating employee:", error);
+        toast.error("Failed to update employee");
+      });
 
- const handleActiveChange = (e) =>{
-     if (e.target.checked) 
-     {
+  };
+
+
+  const handleActiveChange = (e) => {
+    if (e.target.checked) {
       setisActive(1);
-     }
-     else
-     {
+    } else {
       setisActive(0);
-     }
- }
+    }
+  };
 
- const editHandleActiveChange = (e) =>{
-  if (e.target.checked) 
-  {
-   editSetisActive(1);
-  }
-  else
-  {
-   editSetisActive(0);
-  }
-}
-
+  const editHandleActiveChange = (e) => {
+    if (e.target.checked) {
+      editSetisActive(1);
+    } else {
+      editSetisActive(0);
+    }
+  };
 
   return (
     <Fragment>
-    <ToastContainer />
+      <ToastContainer />
       <Container>
         <Row>
           <Col>
@@ -241,7 +262,7 @@ const CRUD = () => {
           <Button variant="secondary" onClick={handleClose}>
             Close
           </Button>
-          <Button variant="primary" onClick={handleUpdate()}>
+          <Button variant="primary" onClick={handleUpdate}>
             Save Changes
           </Button>
         </Modal.Footer>
